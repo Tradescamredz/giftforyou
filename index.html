@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Surprise 🎂</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #fff0f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    #page {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      max-height: 78vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px #0002;
+    }
+
+    #controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 24px;
+      padding: 12px 20px;
+      background: #e75480;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    #counter {
+      color: #923b60;
+      font-weight: bold;
+    }
+
+    #start {
+      margin-top: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <img id="page" src="page1.png" alt="Birthday page 1">
+
+  <div id="controls">
+    <button id="prev" disabled>⬅ Previous</button>
+    <span id="counter">Page 1 of 7</span>
+    <button id="next">Next ➡</button>
+  </div>
+
+  <button id="start">🎵 Start Birthday Surprise</button>
+
+  <audio id="music1" src="song1.mp3" preload="auto"
+         loop></audio>
+  <audio id="music2" src="song2.mp3" preload="auto"
+         loop></audio>
+
+  <script>
+    const pages = [
+      "page1.png",
+      "page2.png",
+      "page3.png",
+      "page4.png",
+      "page5.png",
+      "page6.png",
+      "page7.png"
+    ];
+
+    const pageImage = document.getElementById("page");
+    const counter = document.getElementById("counter");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    const start = document.getElementById("start");
+    const music1 = document.getElementById("music1");
+    const music2 = document.getElementById("music2");
+
+    let currentPage = 0;
+    let started = false;
+    let currentSong = 1;
+
+    async function playSong(number) {
+      const song = number === 1 ? music1 : music2;
+      const other = number === 1 ? music2 : music1;
+
+      if (currentSong !== number) {
+        other.pause();
+        other.currentTime = 0;
+        currentSong = number;
+      }
+
+      try {
+        await song.play();
+        started = true;
+        start.textContent = "🎵 Music Playing";
+      } catch (error) {
+        start.textContent = "🎵 Tap to Play Music";
+      }
+    }
+
+    function showPage() {
+      pageImage.src = pages[currentPage];
+      pageImage.alt = `Birthday page ${currentPage + 1}`;
+      counter.textContent = `Page ${currentPage + 1} of 7`;
+
+      prev.disabled = currentPage === 0;
+      next.disabled = currentPage === 6;
+
+      if (started) {
+        playSong(currentPage === 6 ? 2 : 1);
+      }
+
+      if (currentPage === 6) {
+        start.textContent = started
+          ? "🎵 Final Page"
+          : "🎵 Start Final Song";
+      } else if (!started) {
+        start.textContent = "🎵 Start Birthday Surprise";
+      }
+    }
+
+    start.addEventListener("click", () => {
+      playSong(currentPage === 6 ? 2 : 1);
+    });
+
+    next.addEventListener("click", () => {
+      if (currentPage < 6) {
+        currentPage++;
+        showPage();
+      }
+    });
+
+    prev.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        showPage();
+      }
+    });
+  </script>
+
+</body>
+</html>
